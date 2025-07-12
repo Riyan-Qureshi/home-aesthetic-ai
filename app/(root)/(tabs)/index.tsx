@@ -3,11 +3,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import icons from '@/constants/icons';
 import ToolCard from '@/components/ToolCard';
+// import { useCallback, useEffect, useState } from 'react';
+// import * as NavigationBar from 'expo-navigation-bar'
+
+const DATA = [
+  {
+    title: 'Interior Design',
+    description: 'Upload a pic, choose a style, let AI design the room!'
+  },
+  {
+    title: 'Garden Design',
+    description: 'Upload a pic, choose a style, let AI design the room!'
+  },
+  {
+    title: 'Reference Style',
+    description: 'Upload a pic, choose a style, let AI design the room!'
+  },
+]
 
 export default function Index() {
+  const handleFeatureCardPress = () => router.navigate(`/create`);
+
   return (
     <SafeAreaView className='bg-white h-full'>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <View className="flex flex-row items-center justify-between mt-2 mx-5 border-b-black border-b-2 pb-2">
           {/* Filler Item */}
           <TouchableOpacity
@@ -15,33 +34,21 @@ export default function Index() {
           />
 
           {/* Title */}
-          <Text className="font-rubik-medium text-3xl text-black">Home Aesthetic AI</Text>
+          <Text className="font-rubik-medium text-2xl text-black">Home Aesthetic AI</Text>
 
-          {/* Escape Button */}
+          {/* Settings Button */}
           <Pressable
-            onPress={() => router.navigate('/(tabs)/about')}
+            onPress={() => router.navigate('/profile')}
             className="flex flex-row rounded-full size-12 items-center justify-center"
           >
               <Image source={icons.filter} className="size-8" />
           </Pressable>
       </View>
       <FlatList
-        data={[
-          {
-            title: 'Interior Design',
-            description: 'Upload a pic, choose a style, let AI design the room!'
-          },
-          {
-            title: 'Garden Design',
-            description: 'Upload a pic, choose a style, let AI design the room!'
-          },
-          {
-            title: 'Reference Style',
-            description: 'Upload a pic, choose a style, let AI design the room!'
-          },
-        ]}
-        renderItem={({item}) => <ToolCard title={item.title} description={item.description} buttonPress={() => {}} image=''/>}
+        data={DATA}
         contentContainerClassName='px-5 pb-24 items-center'
+        renderItem={({item}) => <ToolCard title={item.title} description={item.description} buttonPress={() => handleFeatureCardPress()} image=''/>}
+        keyExtractor={(item) => item.title}
         bounces={false}
       />
 

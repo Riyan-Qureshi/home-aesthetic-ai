@@ -35,6 +35,7 @@ import swim from "@/assets/icons/swim.png";
 import wallet from "@/assets/icons/wallet.png";
 import wifi from "@/assets/icons/wifi.png";
 import x from "@/assets/icons/x-icon.png";
+import img from "@/assets/images/IMG_1453.png"
 
 export default {
   google,
@@ -74,4 +75,5 @@ export default {
   pause,
   confetti,
   x,
+  img,
 };

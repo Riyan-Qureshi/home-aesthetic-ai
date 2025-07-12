@@ -5,5 +5,12 @@ module.exports = function (api) {
         ["babel-preset-expo", { jsxImportSource: "nativewind" }],
         "nativewind/babel",
       ],
+      plugins: [
+        ['dotenv-import', {
+          moduleName: '@env',
+          path: '.env',
+          // Optionally, add more configuration like blocklist, allowlist, safe, allowUndefined, verbose
+        }],
+      ],
     };
   };

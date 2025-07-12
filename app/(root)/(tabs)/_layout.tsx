@@ -41,9 +41,9 @@ export default function TabLayout() {
             }}
         />
             <Tabs.Screen 
-                name='about'
+                name='create'
                 options={{
-                    title: 'About',
+                    title: 'Create',
                     headerShown: false,
                     tabBarIcon: ({focused}) => (
                         <TabIcon icon={icons.edit} focused={focused} title={'Create'}/>
