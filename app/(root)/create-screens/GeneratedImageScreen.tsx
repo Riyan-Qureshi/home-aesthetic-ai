@@ -1,14 +1,21 @@
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
-import { useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '@/components/Header';
+import { API_ANDROID_HOST, API_HOST, API_PORT } from '@env';
+import axios from 'axios';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const host = Platform.OS === 'android' ? API_ANDROID_HOST : API_HOST
+const port = API_PORT
+const BACKEND_URL = `http://${host}:${port}`
 
 const GeneratedImageScreen = () => {
-    const {selectedImage} = useLocalSearchParams<{selectedImage?: string}>()
+    const {selectedImage, selectedRoom} = useLocalSearchParams<{selectedImage: string, selectedRoom: string}>()
+    const theme: string = 'Cyberpunk'
 
     // States for Gemini API interaction
-    const [prompt, setPrompt] = useState<string>('Can you apply a Cyberpunk home aesthetic to this image?');
+    const [prompt, setPrompt] = useState<string>(`Can you apply a ${theme} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout?`);
     const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -51,9 +58,6 @@ const GeneratedImageScreen = () => {
           'Content-Type': 'multipart/form-data', // Important for sending files
         },
       });
-      // const response = await axios.get(`${BACKEND_URL}/generate-image`)
-
-      // console.log(response.data.text)
 
       // Check if image data is present in the response
       if (response.data.image) {
@@ -77,6 +81,36 @@ const GeneratedImageScreen = () => {
   return (
     <SafeAreaView className='items-center mx-5'>
       <Header text='Generate Screen' size='text-xl'/>
+      
+      {/* Middle Card */}
+      <View 
+        className="flex flex-col items-center justify-center w-full h-96 mt-3 bg-slate-50 border-dotted" 
+        style={{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.2)'}}
+      >
+          {loading && (
+          <View className="flex-row items-center justify-center">
+              <ActivityIndicator size="large" color="#0000ff" className="mr-3" />
+              <Text className="font-rubik text-gray-600 text-lg">Generating your image...</Text>
+          </View>
+          )}
+
+          {error && (
+          <Text className="font-rubik text-red-600 text-center mt-4 text-base">{error}</Text>
+          )}
+
+          {generatedImageUrl && !loading && (
+          <Image 
+              source={{uri: generatedImageUrl}} 
+              className={'w-full h-96 rounded-lg'}
+          />
+          )}
+
+          {!generatedImageUrl && !loading && !error && (
+          <Text className="font-rubik text-gray-500 text-base">
+              Your generated image will appear here.
+          </Text>
+          )}
+      </View>
 
       {/* Generate Redesign Button */}
       <TouchableOpacity
@@ -92,7 +126,7 @@ const GeneratedImageScreen = () => {
       </TouchableOpacity>
       
       {/* Generated Image Display Section */}
-      <View className="flex pt-8 mx-5 items-center">
+      {/* <View className="flex pt-8 mx-5 items-center">
           <Text className="font-rubik-semibold text-black text-xl mb-4">Generated Redesign:</Text>
           {loading && (
           <View className="flex-row items-center justify-center">
@@ -117,7 +151,7 @@ const GeneratedImageScreen = () => {
               Your generated image will appear here.
           </Text>
           )}
-      </View>
+      </View> */}
   </SafeAreaView>
   )
 }

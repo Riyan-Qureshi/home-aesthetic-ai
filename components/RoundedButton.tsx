@@ -1,18 +1,13 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { textSize } from '@/constants/data'
 import React from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 interface Props {
     onPress: any,
     buttonImage: any,
     title?: string,
-    textSize?: textSize
-}
-
-export enum textSize {
-    small = 'text-sm',
-    medium = 'text-md',
-    large = 'text-lg',
-    xl = 'text-xl'
+    textSize?: textSize,
+    isDisabled?: boolean
 }
 
 const renderContent = (title : string | undefined) => {
@@ -31,16 +26,16 @@ const renderContent = (title : string | undefined) => {
     return "Missing Title"
 }
 
-export default function RoundedButton({onPress, buttonImage, title, textSize} : Props) {
+export default function RoundedButton({onPress, buttonImage, title, textSize, isDisabled} : Props) {
   return (
     <TouchableOpacity
         onPress={onPress}
         className="flex pt-2"
     >
-        <View className='flex-row bg-black p-4 rounded-full items-center justify-evenly'>
-            <Text className={`font-rubik-semibold text-white ${textSize} pr-2`}>{renderContent(title)}</Text>
-            <View className='bg-white p-1 rounded-full'>
-                <Image source={buttonImage} className='size-5'/>
+        <View className={`flex-row p-4 w-40 rounded-full items-center ${isDisabled ? 'bg-slate-100' : 'bg-black'}`}>
+            <Text className={`font-rubik-semibold ${textSize} pr-2 m-auto ${isDisabled ? 'text-gray-400' : 'text-white'}`}>{renderContent(title)}</Text>
+            <View className='bg-white p-1 rounded-full ml-auto'>
+                <Image source={buttonImage} className='size-5' tintColor={`${isDisabled? '#9ca3af' : '#000000'}`}/>
             </View>
         </View>
     </TouchableOpacity>
