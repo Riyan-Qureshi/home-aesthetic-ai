@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import { API_ANDROID_HOST, API_HOST, API_PORT } from '@env';
-import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
@@ -11,60 +10,63 @@ const port = API_PORT
 const BACKEND_URL = `http://${host}:${port}`
 
 const GeneratedImageScreen = () => {
-    const {selectedImage, selectedRoom} = useLocalSearchParams<{selectedImage: string, selectedRoom: string}>()
-    const theme: string = 'Cyberpunk'
+    const {selectedImage, selectedRoom, selectedAesthetic} = useLocalSearchParams<{selectedImage: string, selectedRoom: string, selectedAesthetic: string}>()
 
     // States for Gemini API interaction
-    const [prompt, setPrompt] = useState<string>(`Can you apply a ${theme} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout?`);
+    const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout?`);
     const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     // Function to send prompt and/or image to the backend for Gemini API call
     const generateImage = async () => {
-    // Validate input: require at least a prompt or an image
-    if (!prompt.trim() && !selectedImage) {
-      setError('Please enter a prompt or select an image to generate.');
-      setGeneratedImageUrl(undefined);
-      return;
-    }
+      // Validate input: require at least a prompt or an image
+      if (!prompt.trim() && !selectedImage) {
+        setError('Please enter a prompt or select an image to generate.');
+        setGeneratedImageUrl(undefined);
+        return;
+      }
 
-    setLoading(true);
-    setGeneratedImageUrl(undefined); // Clear previous generated image
-    setError(null); // Clear previous errors
+      setLoading(true);
+      setGeneratedImageUrl(undefined); // Clear previous generated image
+      setError(null); // Clear previous errors
 
-    const formData = new FormData();
-    if (prompt.trim()) {
-      formData.append('prompt', prompt);
-    }
+      const formData = new FormData();
+      if (prompt.trim()) {
+        formData.append('prompt', prompt);
+      }
 
-    if (selectedImage) {
-      // Prepare image for FormData. Axios handles 'multipart/form-data' well with URI.
-      const filename = selectedImage.split('/').pop();
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image';
+      if (selectedImage) {
+        // Prepare image for FormData. Axios handles 'multipart/form-data' well with URI.
+        const filename = selectedImage.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image';
 
-      formData.append('image', {
-        uri: selectedImage,
-        name: filename,
-        type: type,
-      });
+        formData.append('image', {
+          uri: selectedImage,
+          name: filename,
+          type: type,
+        });
     }
 
     try {
       // Make the API call to your backend
-      const response = await axios.post(`${BACKEND_URL}/generate-image`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Important for sending files
-        },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/generate-image`, 
+        {
+          method: "POST",
+          headers: { 'Content-Type': 'multipart/form-data' },
+          body: formData
+        }
+      );
+      const data = await response.json()
 
       // Check if image data is present in the response
-      if (response.data.image) {
-        setGeneratedImageUrl(`data:image/jpeg;base64,${response.data.image}`)
-      } else if (response.data.textResponse) {
+      if (response.ok) {
+        setGeneratedImageUrl(`data:image/jpeg;base64,${data.image}`)
+      } else if (data.textResponse) {
         // Handle cases where Gemini might return only text
-        setError(`Model returned text: "${response.data.textResponse}". No image was generated.`);
+        setError(`Model returned text: "${data.textResponse}". No image was generated.`);
       } else {
         setError('Unexpected response from the server. No image data received.');
       }
@@ -72,6 +74,8 @@ const GeneratedImageScreen = () => {
     } catch (err: any) {
       console.error('Error during image generation:', err);
       // Display more specific error if available from backend
+      console.log('Error Response: ' + err.response.data)
+      console.log('Error Message: ' + err.message)
       setError('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.'));
     } finally {
       setLoading(false);
@@ -116,42 +120,14 @@ const GeneratedImageScreen = () => {
       <TouchableOpacity
           onPress={generateImage}
           disabled={loading} // Disable while loading
-          className={`mt-6 p-4 rounded-full items-center ${loading ? 'bg-gray-400' : 'bg-blue-600'}`}
+          className={`mt-6 p-4 rounded-full items-center ${loading ? 'bg-gray-400' : 'bg-black'}`}
       >
           {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
+          <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
           <Text className='font-rubik-semibold text-white text-lg'>Generate Redesign</Text>
           )}
       </TouchableOpacity>
-      
-      {/* Generated Image Display Section */}
-      {/* <View className="flex pt-8 mx-5 items-center">
-          <Text className="font-rubik-semibold text-black text-xl mb-4">Generated Redesign:</Text>
-          {loading && (
-          <View className="flex-row items-center justify-center">
-              <ActivityIndicator size="large" color="#0000ff" className="mr-3" />
-              <Text className="font-rubik text-gray-600 text-lg">Generating your image...</Text>
-          </View>
-          )}
-
-          {error && (
-          <Text className="font-rubik text-red-600 text-center mt-4 text-base">{error}</Text>
-          )}
-
-          {generatedImageUrl && !loading && (
-          <Image 
-              source={{uri: generatedImageUrl}} 
-              className={'w-96 h-96 rounded-lg'}
-          />
-          )}
-
-          {!generatedImageUrl && !loading && !error && (
-          <Text className="font-rubik text-gray-500 text-base">
-              Your generated image will appear here.
-          </Text>
-          )}
-      </View> */}
   </SafeAreaView>
   )
 }

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, FlatList, Image } from 'react-native'
+import { View, Text, FlatList, Image } from 'react-native'
 import React, { useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,29 +14,17 @@ const RoomSelectionScreen = () => {
 
     return (
         <SafeAreaView className='mx-5'>
+            <Header text='Choose Room Type' size='text-xl'/>
+            <Text className='font-rubik my-2 text-lg'>Select a room to design and see it transformed in your chosen style</Text>
             <FlatList 
                 data={[0]} //Must provide data but there is no data needed so I place single item array to invoke render item
-                ListHeaderComponent={
-                    <View className=''>
-                        <Header text='Choose Room Type' size='text-xl'/>
-                        <Text className='font-rubik-medium text-lg'>Choose Room</Text>
-                        <Text className='font-rubik mb-2'>Select a room to design and see it transformed in your chosen style</Text>
-                    </View>
-                }
-                ListFooterComponent={
-                    <ContinueButton 
-                        text='Continue' 
-                        disabled={isRoomSelected ? false : true} 
-                        onPress={() => {router.push(`/create-screens/GeneratedImageScreen?selectedImage=${selectedImage}&selectedRoom=${selectedRoom}`)}}
-                    />
-                }
                 renderItem={() => (                
                     <FlatList
                         data={ROOM_DATA}
                         renderItem={ ({item}) => (
                                 <RoundedButton 
                                     buttonImage={item.icon} 
-                                    textSize={textSize.small} 
+                                    textSize={textSize.xl} 
                                     title={item.name} 
                                     onPress={() => {
                                         setSelectedRoom(item.name)
@@ -49,9 +37,18 @@ const RoomSelectionScreen = () => {
                         numColumns={2} 
                         horizontal={false}
                         columnWrapperClassName='justify-evenly'
+                        bounces={false}
+                        className='pb-2'
                     />
                 )}
             />
+            <View className='mt-auto'>
+                <ContinueButton 
+                    text='Continue' 
+                    disabled={isRoomSelected ? false : true} 
+                    onPress={() => {router.push(`/create-screens/StyleSelectionScreen?selectedImage=${selectedImage}&selectedRoom=${selectedRoom}`)}}
+                />
+            </View>
         </SafeAreaView>
     )
 }

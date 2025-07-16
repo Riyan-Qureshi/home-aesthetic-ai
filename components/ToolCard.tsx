@@ -1,3 +1,4 @@
+import { buttonShadowStyle } from "@/constants/data";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
@@ -11,16 +12,7 @@ export default function ToolCard ({title, description, image, buttonPress}: Prop
     return ( 
         <TouchableOpacity 
             className="flex flex-col justify-center relative w-full mt-3 bg-slate-50" 
-            style={{  
-                borderWidth: 2,
-                borderColor: '#8C8E983a',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5, 
-            }}
+            style={buttonShadowStyle}
             onPress={buttonPress}
         >
             {/* Temporary Image Placeholder */}

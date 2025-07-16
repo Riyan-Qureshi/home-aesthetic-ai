@@ -1,6 +1,7 @@
 import ContinueButton from '@/components/ContinueButton';
 import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
+import { textSize } from '@/constants/data';
 import icons from '@/constants/icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
@@ -39,8 +40,7 @@ export default function CreateScreen() {
   };
 
   return (
-    <SafeAreaView className='flex flex-col h-screen-safe'>
-      <ScrollView className='mx-5'>
+    <SafeAreaView className='flex flex-col h-screen-safe mx-5'>
         <Header text='Create Screen' size='text-xl'/>
         
         {/* Body */}
@@ -66,16 +66,14 @@ export default function CreateScreen() {
             }
 
             {/* Add Photo Button */}
-            <RoundedButton onPress={() => pickImageAsync()} buttonImage={icons.send} title='Add Photo'/>
+            <RoundedButton onPress={() => pickImageAsync()} buttonImage={icons.send} title='Add Photo' textSize={textSize.xl}/>
           </View>
         </View>
 
         {/* Bottom */}
-        <View className="items-center">
+        <View className="items-center mt-auto">
           <ContinueButton text='Continue' disabled={selectedImage ? false : true} onPress={() => {router.push(`/create-screens/RoomSelectionScreen?selectedImage=${selectedImage}`)}}/>
         </View>
-        
-      </ScrollView>
     </SafeAreaView>
   );
 }

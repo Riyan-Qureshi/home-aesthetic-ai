@@ -7,7 +7,8 @@ interface Props {
     buttonImage: any,
     title?: string,
     textSize?: textSize,
-    isDisabled?: boolean
+    isDisabled?: boolean,
+    buttonSize?: number,
 }
 
 const renderContent = (title : string | undefined) => {
@@ -26,14 +27,14 @@ const renderContent = (title : string | undefined) => {
     return "Missing Title"
 }
 
-export default function RoundedButton({onPress, buttonImage, title, textSize, isDisabled} : Props) {
+export default function RoundedButton({onPress, buttonImage, title, textSize, isDisabled, buttonSize} : Props) {
   return (
     <TouchableOpacity
         onPress={onPress}
         className="flex pt-2"
     >
-        <View className={`flex-row p-4 w-40 rounded-full items-center ${isDisabled ? 'bg-slate-100' : 'bg-black'}`}>
-            <Text className={`font-rubik-semibold ${textSize} pr-2 m-auto ${isDisabled ? 'text-gray-400' : 'text-white'}`}>{renderContent(title)}</Text>
+        <View className={`flex-row py-6 px-4 w-48 rounded-full items-center ${isDisabled ? 'bg-slate-100' : 'bg-black'}`}>
+            <Text className={`font-rubik-semibold ${textSize} m-auto ${isDisabled ? 'text-gray-400' : 'text-white'}`}>{renderContent(title)}</Text>
             <View className='bg-white p-1 rounded-full ml-auto'>
                 <Image source={buttonImage} className='size-5' tintColor={`${isDisabled? '#9ca3af' : '#000000'}`}/>
             </View>
