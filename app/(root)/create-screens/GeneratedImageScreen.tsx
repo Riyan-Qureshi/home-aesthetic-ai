@@ -1,4 +1,5 @@
 import Header from '@/components/Header';
+import { getAesthetic, getImageUri, getRoomType } from '@/store/FormDataStore';
 import { API_ANDROID_HOST, API_HOST, API_PORT } from '@env';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
@@ -8,12 +9,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const host = Platform.OS === 'android' ? API_ANDROID_HOST : API_HOST
 const port = API_PORT
 const BACKEND_URL = `http://${host}:${port}`
+// const BACKEND_URL = 'http://10.0.0.64:3000'
 
 const GeneratedImageScreen = () => {
-    const {selectedImage, selectedRoom, selectedAesthetic} = useLocalSearchParams<{selectedImage: string, selectedRoom: string, selectedAesthetic: string}>()
+    // const {selectedImage, selectedRoom, selectedAesthetic} = useLocalSearchParams<{selectedImage: string, selectedRoom: string, selectedAesthetic: string}>()
+    const selectedImage = getImageUri()
+    const selectedRoom = getRoomType()
+    const selectedAesthetic = getAesthetic()
 
     // States for Gemini API interaction
     const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout?`);
+    // console.log(prompt)
+    // console.log(selectedImage)
     const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -46,7 +53,7 @@ const GeneratedImageScreen = () => {
           uri: selectedImage,
           name: filename,
           type: type,
-        });
+        } as any);
     }
 
     try {
@@ -55,7 +62,6 @@ const GeneratedImageScreen = () => {
         `${BACKEND_URL}/generate-image`, 
         {
           method: "POST",
-          headers: { 'Content-Type': 'multipart/form-data' },
           body: formData
         }
       );
@@ -72,11 +78,9 @@ const GeneratedImageScreen = () => {
       }
 
     } catch (err: any) {
-      console.error('Error during image generation:', err);
+      // console.error('Error during image generation:', err.message);
       // Display more specific error if available from backend
-      console.log('Error Response: ' + err.response.data)
-      console.log('Error Message: ' + err.message)
-      setError('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.'));
+      console.error('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.'));
     } finally {
       setLoading(false);
     }

@@ -6,9 +6,10 @@ import Header from '@/components/Header';
 import ContinueButton from '@/components/ContinueButton';
 import { STYLE_DATA, textSize } from '@/constants/data';
 import ImageButton from '@/components/ImageButton';
+import { getAesthetic, setAesthetic } from '@/store/FormDataStore';
 
-const StyleSelectionScreen = () => {
-  const {selectedImage, selectedRoom} = useLocalSearchParams<{selectedImage?: string, selectedRoom: string}>();
+const AestheticSelectionScreen = () => {
+//   const {selectedImage, selectedRoom} = useLocalSearchParams<{selectedImage?: string, selectedRoom: string}>();
   const [selectedAesthetic, setSelectedAesthetic] = useState<string>();
   const [isStyleSelected, setIsStyleSelected] = useState<boolean>(false);
 
@@ -27,7 +28,8 @@ const StyleSelectionScreen = () => {
                         <ImageButton 
                             title={item.name}
                             buttonPress={() => {
-                                setSelectedAesthetic(item.name)
+                                setAesthetic(item.name)
+                                setSelectedAesthetic(getAesthetic())
                                 setIsStyleSelected(true)
                             }}
                             isDisabled={item.name !== selectedAesthetic}
@@ -45,11 +47,11 @@ const StyleSelectionScreen = () => {
             <ContinueButton 
                 text='Continue' 
                 disabled={isStyleSelected ? false : true} 
-                onPress={() => {router.push(`/create-screens/GeneratedImageScreen?selectedImage=${selectedImage}&selectedRoom=${selectedRoom}&selectedAesthetic=${selectedAesthetic}`)}}
+                onPress={() => {router.push(`/create-screens/GeneratedImageScreen`)}}
             />
         </View>
     </SafeAreaView>
   )
 }
 
-export default StyleSelectionScreen
+export default AestheticSelectionScreen

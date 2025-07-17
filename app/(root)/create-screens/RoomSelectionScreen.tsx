@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,10 +6,11 @@ import ContinueButton from '@/components/ContinueButton';
 import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
 import { ROOM_DATA, textSize } from '@/constants/data';
+import { getRoomType, setRoomType } from '@/store/FormDataStore';
 
 const RoomSelectionScreen = () => {
-    const {selectedImage} = useLocalSearchParams<{selectedImage?: string,}>();
-    const [selectedRoom, setSelectedRoom] = useState<string>();
+    // const {selectedImage} = useLocalSearchParams<{selectedImage?: string,}>();
+    const [selectedRoomType, setSelectedRoomType] = useState<string>();
     const [isRoomSelected, setIsRoomSelected] = useState<boolean>(false);
 
     return (
@@ -24,13 +25,14 @@ const RoomSelectionScreen = () => {
                         renderItem={ ({item}) => (
                                 <RoundedButton 
                                     buttonImage={item.icon} 
-                                    textSize={textSize.xl} 
+                                    textSize={textSize.large} 
                                     title={item.name} 
                                     onPress={() => {
-                                        setSelectedRoom(item.name)
+                                        setRoomType(item.name)
+                                        setSelectedRoomType(getRoomType)
                                         setIsRoomSelected(true)
                                     }} 
-                                    isDisabled={item.name !== selectedRoom}
+                                    isDisabled={item.name !== selectedRoomType}
                                 />
                             )
                         } 
@@ -46,7 +48,7 @@ const RoomSelectionScreen = () => {
                 <ContinueButton 
                     text='Continue' 
                     disabled={isRoomSelected ? false : true} 
-                    onPress={() => {router.push(`/create-screens/StyleSelectionScreen?selectedImage=${selectedImage}&selectedRoom=${selectedRoom}`)}}
+                    onPress={() => {router.push(`/create-screens/AestheticSelectionScreen`)}}
                 />
             </View>
         </SafeAreaView>

@@ -3,10 +3,11 @@ import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
 import { textSize } from '@/constants/data';
 import icons from '@/constants/icons';
+import { getImageUri, setImageUri } from '@/store/FormDataStore';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateScreen() {
@@ -33,7 +34,9 @@ export default function CreateScreen() {
     });
 
     if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
+      // setSelectedImage(result.assets[0].uri);
+      setImageUri(result.assets[0].uri)
+      setSelectedImage(getImageUri());
     } else {
       alert('You did not select any image.');
     }
@@ -72,7 +75,7 @@ export default function CreateScreen() {
 
         {/* Bottom */}
         <View className="items-center mt-auto">
-          <ContinueButton text='Continue' disabled={selectedImage ? false : true} onPress={() => {router.push(`/create-screens/RoomSelectionScreen?selectedImage=${selectedImage}`)}}/>
+          <ContinueButton text='Continue' disabled={selectedImage !== undefined ? false : true} onPress={() => {router.push(`/create-screens/RoomSelectionScreen`)}}/>
         </View>
     </SafeAreaView>
   );
