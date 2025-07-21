@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view'
 
 export default function CreateScreen() {
 
@@ -53,13 +54,18 @@ export default function CreateScreen() {
           
           {/* Middle Card */}
           <View 
-            className="flex flex-col items-center justify-center w-full h-96 mt-3 bg-slate-50 border-dotted" 
+            className="flex flex-col items-center justify-center w-full h-4/5 mt-3 bg-slate-50 border-dotted" 
             style={{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.2)'}}
           >
             {/* Displays image if selected, otherwise displays prompt text */}
             {selectedImage ? 
-              <View className='flex pt-2'>
-                <Image source={{uri: selectedImage}} className={'w-96 h-64 rounded-lg'}/>
+              <View className='h-3/4 w-full pt-2'>
+                <ReactNativeZoomableView
+                  minZoom={1}
+                  maxZoom={30}
+                >
+                  <Image source={{uri: selectedImage}} className={'w-full h-full rounded-lg'} resizeMode='contain'/>
+                </ReactNativeZoomableView>
               </View>
               :
               <View className='flex flex-col items-center justify-center'>

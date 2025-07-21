@@ -1,15 +1,14 @@
 import { View, Text, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import Header from '@/components/Header';
 import ContinueButton from '@/components/ContinueButton';
-import { STYLE_DATA, textSize } from '@/constants/data';
+import { STYLE_DATA } from '@/constants/data';
 import ImageButton from '@/components/ImageButton';
 import { getAesthetic, setAesthetic } from '@/store/FormDataStore';
 
 const AestheticSelectionScreen = () => {
-//   const {selectedImage, selectedRoom} = useLocalSearchParams<{selectedImage?: string, selectedRoom: string}>();
   const [selectedAesthetic, setSelectedAesthetic] = useState<string>();
   const [isStyleSelected, setIsStyleSelected] = useState<boolean>(false);
 
