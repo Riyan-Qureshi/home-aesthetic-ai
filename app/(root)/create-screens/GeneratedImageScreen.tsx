@@ -2,12 +2,13 @@ import Header from '@/components/Header';
 import { getAesthetic, getImageUri, getRoomType } from '@/store/FormDataStore';
 import { API_ANDROID_HOST, API_HOST, API_PORT } from '@env';
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native'
 import animations from '@/constants/animations'
 import { useFocusEffect } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { RESPONSIVE_SCREEN_WIDTH } from '@/constants/data';
 
 
 const host = Platform.OS === 'android' ? API_ANDROID_HOST : API_HOST
@@ -109,7 +110,7 @@ const GeneratedImageScreen = () => {
             }}
             source={animations.paperplaneLoading}
           />
-          <Text className='font-rubik text-2xl text-black'>Reimagining Your Room...</Text>
+          <Text className='font-rubik text-2xl text-black'>Reimagining Your Room</Text>
         </View>
       )}
       {!loading && (
@@ -118,13 +119,13 @@ const GeneratedImageScreen = () => {
       
       {/* Middle Card */}
       <View 
-        className="flex flex-col items-center justify-center w-full h-4/5 mt-3 bg-slate-50 border-dotted" 
-        style={{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.2)'}}
+        className="flex flex-col h-1/2 items-center justify-center mt-3 bg-slate-50 border-dotted" 
+        style={{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.2)', width: RESPONSIVE_SCREEN_WIDTH}}
       >
         {loading && (
         <View className="flex-row items-center justify-center">
             <ActivityIndicator size="large" color="#0000ff" className="mr-3" />
-            <Text className="font-rubik text-gray-600 text-lg">Generating your image...</Text>
+            <Text className="font-rubik text-gray-600 text-lg">Generating your image</Text>
         </View>
         )}
 
@@ -137,8 +138,9 @@ const GeneratedImageScreen = () => {
           <ReactNativeZoomableView
             minZoom={1}
             maxZoom={30}
+            style={{width: RESPONSIVE_SCREEN_WIDTH, height:'100%'}}
           >
-            <Image source={{uri: generatedImageUrl}} className={'w-96 h-full rounded-lg'} resizeMode='contain'/>
+            <Image source={{uri: generatedImageUrl}} className={'w-full h-full rounded-lg'} resizeMode='cover'/>
           </ReactNativeZoomableView>
         )}
 
@@ -154,12 +156,12 @@ const GeneratedImageScreen = () => {
       <TouchableOpacity
           onPress={generateImage}
           disabled={loading} // Disable while loading
-          className={`mt-6 p-4 rounded-full items-center ${loading ? 'bg-gray-400' : 'bg-black'}`}
+          className={`mt-auto p-8 rounded-full items-center ${loading ? 'bg-gray-400' : 'bg-black'}`}
       >
           {loading ? (
           <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-          <Text className='font-rubik-semibold text-white text-lg'>Generate Redesign</Text>
+          <Text className='font-rubik-semibold text-white text-xl'>Generate Redesign</Text>
           )}
       </TouchableOpacity>
       </View>

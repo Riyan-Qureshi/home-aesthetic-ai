@@ -1,4 +1,9 @@
+import { Dimensions } from "react-native";
 import icons from "./icons";
+
+
+export const RESPONSIVE_SCREEN_WIDTH = Dimensions.get('window').width * 0.9;
+export const RESPONSIVE_SCREEN_HEIGHT = Dimensions.get('window').height * 0.9;
 
 export enum textSize {
     small = 'text-sm',
