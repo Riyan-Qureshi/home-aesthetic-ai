@@ -89,11 +89,12 @@ const GeneratedImageScreen = () => {
   }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     generateImage()
-  //   }, [])
-  // ) 
+  // Makes single POST request once user navigates to this page
+  useFocusEffect(
+    React.useCallback(() => {
+      generateImage()
+    }, [])
+  ) 
 
   const animation = useRef<LottieView>(null); //Prevents re-rendering on change
   return (
