@@ -67,7 +67,7 @@
 
         {/* Animated mask for After image */}
         <Animated.View style={[StyleSheet.absoluteFillObject, maskStyle, { overflow: 'hidden' }]}>
-            <Image source={afterImage} className="h-64" style={[{backgroundColor: "blue", borderTopLeftRadius: 10, borderTopRightRadius: 10, width: CONTAINER_WIDTH}]} resizeMode='cover'/>
+            <Image source={afterImage} className="h-64" style={[{backgroundColor: "white", borderTopLeftRadius: 10, borderTopRightRadius: 10, width: CONTAINER_WIDTH}]} resizeMode='cover'/>
         </Animated.View>
 
         {/* Sweeping white bar */}

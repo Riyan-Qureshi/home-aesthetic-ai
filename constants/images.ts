@@ -29,7 +29,7 @@ import medievalRoom from "@/assets/images/aesthetics/medievalBedroom.png"
 import eightiesRoom from "@/assets/images/aesthetics/80sRoom.png"
 import cartoonRoom from "@/assets/images/aesthetics/cartoonRoom.png"
 import woodRoom from "@/assets/images/aesthetics/woodRoom.png"
-import garden from "@/assets/images/garden.jpg"
+import garden from "@/assets/images/before-images/garden.jpg"
 import beforeLivingRoom1 from "@/assets/images/before-images/beforeLivingRoom1.jpg"
 import beforeBedroom from "@/assets/images/before-images/beforeBedroom.jpg"
 

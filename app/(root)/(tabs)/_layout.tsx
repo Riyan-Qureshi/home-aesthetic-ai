@@ -45,6 +45,7 @@ export default function TabLayout() {
                 tint="systemChromeMaterialLight"
                 intensity={60}
                 style={StyleSheet.absoluteFill}
+                experimentalBlurMethod='dimezisBlurView'
                 />
             )
         }}
