@@ -9,6 +9,7 @@ import animations from '@/constants/animations'
 import { useFocusEffect } from 'expo-router';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { RESPONSIVE_SCREEN_WIDTH } from '@/constants/data';
+import ContinueButton from '@/components/ContinueButton';
 
 
 const host = Platform.OS === 'android' ? API_ANDROID_HOST : API_HOST
@@ -22,7 +23,7 @@ const GeneratedImageScreen = () => {
   const selectedAesthetic = getAesthetic()
 
   // States for Gemini API interaction
-  const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout?`);
+  const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout, but replacing or removing any decor that doesn't fit the aesthetic? Make sure to double check your results such that they match the requested aesthetic.`);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,13 +84,14 @@ const GeneratedImageScreen = () => {
     // console.error('Error during image generation:', err.message);
 
     // Display more specific error if available from backend
-    console.error('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.'));
+    console.error('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.') + '.');
+    setError('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.') + '.')
   } finally {
     setLoading(false);
   }
   };
 
-  // Makes single POST request once user navigates to this page
+  // Makes single POST request whenever user navigates to this page
   useFocusEffect(
     React.useCallback(() => {
       generateImage()
@@ -130,6 +132,7 @@ const GeneratedImageScreen = () => {
         </View>
         )}
 
+        {/* Image Generation Error Text */}
         {error && (
         <Text className="font-rubik text-red-600 text-center mt-4 text-base">{error}</Text>
         )}
@@ -139,9 +142,9 @@ const GeneratedImageScreen = () => {
           <ReactNativeZoomableView
             minZoom={1}
             maxZoom={30}
-            style={{width: RESPONSIVE_SCREEN_WIDTH, height:'100%'}}
+            style={{width: RESPONSIVE_SCREEN_WIDTH - 5, height:'100%'}}
           >
-            <Image source={{uri: generatedImageUrl}} className={'w-full h-full rounded-lg'} resizeMode='cover'/>
+            <Image source={{uri: generatedImageUrl}} className={'w-full h-full'} style={{borderRadius: 10}}resizeMode='contain'/>
           </ReactNativeZoomableView>
         )}
 
@@ -154,7 +157,7 @@ const GeneratedImageScreen = () => {
       </View>
 
       {/* Generate Redesign Button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
           onPress={generateImage}
           disabled={loading} // Disable while loading
           className={`mt-auto p-8 rounded-full items-center ${loading ? 'bg-gray-400' : 'bg-black'}`}
@@ -164,7 +167,12 @@ const GeneratedImageScreen = () => {
           ) : (
           <Text className='font-rubik-semibold text-white text-xl'>Generate Redesign</Text>
           )}
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+        <ContinueButton 
+        onPress={generateImage}
+        disabled={loading}
+        text='GENERATE REDESIGN'
+        />
       </View>
       )}
     </SafeAreaView>

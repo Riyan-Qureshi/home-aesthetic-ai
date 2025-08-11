@@ -1,11 +1,11 @@
 import { View, Text, FlatList } from 'react-native'
 import React, { useState } from 'react'
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ContinueButton from '@/components/ContinueButton';
 import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
-import { ROOM_DATA, textSize } from '@/constants/data';
+import { RESPONSIVE_SCREEN_HEIGHT, ROOM_DATA, textSize } from '@/constants/data';
 import { getRoomType, setRoomType } from '@/store/FormDataStore';
 
 const RoomSelectionScreen = () => {
@@ -14,10 +14,11 @@ const RoomSelectionScreen = () => {
     const [isRoomSelected, setIsRoomSelected] = useState<boolean>(false);
 
     return (
-        <SafeAreaView className='mx-5'>
+        <SafeAreaView className='flex-1 mx-5' style={{}}>
             <Header text='Choose Room Type' size='text-xl'/>
             <Text className='font-rubik my-2 text-lg'>Select a room to design and see it transformed in your chosen style</Text>
-            <FlatList 
+            <FlatList
+                showsVerticalScrollIndicator={false} 
                 data={[0]} //Must provide data but there is no data needed so I place single item array to invoke render item
                 renderItem={() => (                
                     <FlatList
@@ -44,12 +45,14 @@ const RoomSelectionScreen = () => {
                     />
                 )}
             />
-            <View className='mt-auto'>
-                <ContinueButton 
-                    text='Continue' 
-                    disabled={isRoomSelected ? false : true} 
-                    onPress={() => {router.push(`/create-screens/AestheticSelectionScreen`)}}
-                />
+            <View className='py-1 -mx-5'>
+                <View className='mx-5'>
+                    <ContinueButton 
+                        text='CONTINUE' 
+                        disabled={isRoomSelected ? false : true} 
+                        onPress={() => {router.push(`/create-screens/AestheticSelectionScreen`)}}
+                    />
+                </View>
             </View>
         </SafeAreaView>
     )

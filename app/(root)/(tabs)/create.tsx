@@ -5,11 +5,12 @@ import { textSize } from '@/constants/data';
 import icons from '@/constants/icons';
 import { getImageUri, setImageUri } from '@/store/FormDataStore';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view'
+import IconButton from '@/components/IconButton';
 
 export default function CreateScreen() {
 
@@ -24,6 +25,12 @@ export default function CreateScreen() {
       }
     })();
   }, []);
+
+  useFocusEffect(() => {
+    if(getImageUri()) {
+      setSelectedImage(getImageUri())
+    }
+  })
 
   // Image Picker
   const pickImageAsync = async () => {
@@ -44,18 +51,18 @@ export default function CreateScreen() {
   };
 
   return (
-    <SafeAreaView className='flex flex-col h-screen-safe mx-5'>
+    <SafeAreaView className='flex-col mx-5'>
         <Header text='Create Screen' size='text-xl'/>
         
         {/* Body */}
         <View className='pt-5'>
           {/* Title */}
-          <Text className='font-rubik-semibold text-black text-xl'> Add a Photo</Text>
+          {/* <Text className='font-rubik-semibold text-black text-xl'> Add a Photo</Text> */}
           
           {/* Middle Card */}
           <View 
             className="flex flex-col items-center justify-center w-full h-4/5 mt-3 bg-slate-50 border-dotted" 
-            style={{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.2)'}}
+            style={[{borderWidth: 2, borderColor: '#8C8E983a', borderRadius: 10, boxShadow: '5 5 4 0 rgba(0, 0, 0, 0.1)'}]}
           >
             {/* Displays image if selected, otherwise displays prompt text */}
             {selectedImage ? 
@@ -74,14 +81,19 @@ export default function CreateScreen() {
               </View>
             }
 
-            {/* Add Photo Button */}
-            <RoundedButton onPress={() => pickImageAsync()} buttonImage={icons.send} title='Add Photo' textSize={textSize.xl}/>
+            <View className='flex-row items-center justify-evenly w-full'>
+              {/* Add Photo Button */}
+              <RoundedButton onPress={() => pickImageAsync()} buttonImage={"image-multiple"} title='Add Photo' textSize={textSize.xl}/>
+              
+              {/* Take Photo Button */}
+              <IconButton onPress={() => {router.push(`/feature-screens/CameraScreen`)}} buttonImage={"camera"} buttonSize={24}/>
+            </View>
           </View>
         </View>
 
         {/* Bottom */}
-        <View className="items-center mt-auto">
-          <ContinueButton text='Continue' disabled={selectedImage !== undefined ? false : true} onPress={() => {router.push(`/create-screens/RoomSelectionScreen`)}}/>
+        <View className="absolute bottom-20 items-center w-full">
+          <ContinueButton text='CONTINUE' disabled={selectedImage !== undefined ? false : true} onPress={() => {router.push(`/create-screens/RoomSelectionScreen`)}}/>
         </View>
     </SafeAreaView>
   );

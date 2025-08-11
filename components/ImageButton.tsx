@@ -15,8 +15,7 @@ export default function ImageButton ({title, image, buttonPress, isDisabled}: Pr
             style={buttonShadowStyle}
             onPress={buttonPress}
         >
-            {/* Temporary Image Placeholder */}
-            <View className="flex bg-white h-28" style={{borderRadius: 10}}/>
+            <Image source={image} className="h-28 w-full" style={{borderRadius: 10}} resizeMode="cover"/>
 
             <View className="flex items-center">
                 <Text className={`font-rubik text-md my-2 ${isDisabled ? 'text-black' : 'text-white'}`}>{title}</Text>

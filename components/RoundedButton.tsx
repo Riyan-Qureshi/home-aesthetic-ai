@@ -1,6 +1,7 @@
 import { textSize } from '@/constants/data'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface Props {
     onPress: any,
@@ -36,7 +37,8 @@ export default function RoundedButton({onPress, buttonImage, title, textSize, is
         <View className={`flex-row py-6 px-4 w-48 rounded-full items-center ${isDisabled ? 'bg-slate-100' : 'bg-black'}`}>
             <Text className={`font-rubik-semibold ${textSize} m-auto ${isDisabled ? 'text-gray-400' : 'text-white'}`}>{renderContent(title)}</Text>
             <View className='bg-white p-1 rounded-full ml-auto'>
-                <Image source={buttonImage} className='size-5' tintColor={`${isDisabled? '#9ca3af' : '#000000'}`}/>
+                {/* <Image source={buttonImage} className='size-5' tintColor={`${isDisabled? '#9ca3af' : '#000000'}`}/> */}
+                <MaterialCommunityIcons name={buttonImage} size={24} color={`${isDisabled? '#9ca3af' : '#000000'}`}/>
             </View>
         </View>
     </TouchableOpacity>
