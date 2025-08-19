@@ -1,7 +1,32 @@
-import { SplashScreen, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import './global.css'
 import {useFonts} from "expo-font"
 import { useEffect } from "react";
+import { AuthProvider, useAuth } from "@/provider/AuthProvider";
+
+// Makes sure the user is authenticated before accessing protected pages
+const InitialLayout = () => {
+  const { session, initialized } = useAuth()
+  const segments = useSegments()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!initialized) return
+
+    // Check if the path/url is in the (root) group
+    const inAuthGroup = segments[0] === '(root)'
+
+    if (session && !inAuthGroup) {
+      // Redirect authenticated users to the home page
+      router.replace('/')
+    } else if (!session) {
+      // Redirect unauthenticated users to the AuthVerifyScreen page
+      router.replace('/AuthVerifyScreen')
+    }
+  }, [session, initialized])
+
+  return <Slot />
+}
 
 export default function RootLayout() {
   const fontsLoaded = useFonts({
@@ -18,9 +43,13 @@ export default function RootLayout() {
     if(fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, fontsLoaded);
+  }, [fontsLoaded]);
 
   if(!fontsLoaded) return null;
   
-  return <Stack screenOptions={{headerShown: false}}/>;
+  return (
+    <AuthProvider>
+      <InitialLayout />
+    </AuthProvider>
+  )
 }

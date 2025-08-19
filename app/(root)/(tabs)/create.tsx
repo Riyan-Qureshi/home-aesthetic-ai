@@ -2,29 +2,32 @@ import ContinueButton from '@/components/ContinueButton';
 import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
 import { textSize } from '@/constants/data';
-import icons from '@/constants/icons';
 import { getImageUri, setImageUri } from '@/store/FormDataStore';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view'
 import IconButton from '@/components/IconButton';
+import { uploadFiles } from '@/utils/tus';
+import { useAuth } from '@/provider/AuthProvider';
 
 export default function CreateScreen() {
-
+  const { user } = useAuth()
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   // Request media library permissions when the component mounts
   useEffect(() => {
+    if (!user) return;
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
     })();
-  }, []);
+  }, [user]);
 
   useFocusEffect(() => {
     if(getImageUri()) {
@@ -36,15 +39,23 @@ export default function CreateScreen() {
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      allowsEditing: false,
+      allowsEditing: true,
       quality: 0.7, // Reduce quality to keep file size manageable for API
       base64: false, // We'll handle base64 conversion in the backend for security/efficiency
     });
 
     if (!result.canceled) {
-      // setSelectedImage(result.assets[0].uri);
+      try {
+        setIsUploading(true)
+        await uploadFiles('uploads', result, user!.id)
+      } catch (err) {
+        console.log(err)
+        alert('Upload failed! ;-;')
+      } finally {
+        setIsUploading(false)
+      }
       setImageUri(result.assets[0].uri)
-      setSelectedImage(getImageUri());
+      setSelectedImage(getImageUri());   
     } else {
       alert('You did not select any image.');
     }
@@ -76,8 +87,14 @@ export default function CreateScreen() {
               </View>
               :
               <View className='flex flex-col items-center justify-center'>
+                {/* Temp uploading activity indicator */}
+                { isUploading ? 
+                <ActivityIndicator animating size={'large'} color={'#0000ee'}/>
+                :
+                <View></View>
+                }
                 <Text className='font-rubik-semibold text-black text-lg'>Start Redesigning</Text>
-                <Text className='font-rubik text-black text-lg'>Redesign and accentuate your home</Text>
+                <Text className='font-rubik text-black text-lg'>Redesign and accentuate your home</Text> 
               </View>
             }
 
