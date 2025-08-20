@@ -41,3 +41,7 @@ app-example
 
 # Images
 assets/images/aesthetics
+
+# Builds
+ios/
+android/
