@@ -1,4 +1,4 @@
-import { SUPABASE_PROJECT_STORAGE_URL } from '@env';
+import { EXPO_PUBLIC_SUPABASE_PROJECT_STORAGE_URL } from '@env';
 import * as ImagePicker from 'expo-image-picker';
 import { fetch } from 'expo/fetch';
 import { Upload } from 'tus-js-client';
@@ -38,7 +38,7 @@ const allUploads = pickerResult.assets.map(
 
         const upload = new Upload(reader, {
         uploadLengthDeferred: true,
-        endpoint: `${SUPABASE_PROJECT_STORAGE_URL}/storage/v1/upload/resumable`,
+        endpoint: `${EXPO_PUBLIC_SUPABASE_PROJECT_STORAGE_URL}/storage/v1/upload/resumable`,
         retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
             authorization: `Bearer ${accessToken}`, // or replace with logged in user's access token.
