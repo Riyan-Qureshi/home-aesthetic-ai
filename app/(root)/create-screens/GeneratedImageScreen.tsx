@@ -4,8 +4,8 @@ import animations from '@/constants/animations';
 import { RESPONSIVE_SCREEN_WIDTH } from '@/constants/data';
 import { useAuth } from '@/provider/AuthProvider';
 import { getAesthetic, getImageFilename, getImageUri, getRoomType } from '@/store/FormDataStore';
+import { blobToBase64 } from '@/utils/common';
 import { supabase } from '@/utils/supabase';
-import { EXPO_PUBLIC_SUPABASE_ANON_KEY, EXPO_PUBLIC_SUPABASE_URL } from '@env';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
@@ -15,7 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const GeneratedImageScreen = () => {
-  // const {selectedImage, selectedRoom, selectedAesthetic} = useLocalSearchParams<{selectedImage: string, selectedRoom: string, selectedAesthetic: string}>()
   const selectedImage = getImageUri()
   const selectedRoom = getRoomType()
   const selectedAesthetic = getAesthetic()
@@ -26,7 +25,6 @@ const GeneratedImageScreen = () => {
    * TODO: Improve prompt, this should be alot more descriptive and describe the scene better.
    * The room type and other details can possibly be inferenced from another GPT call
    * */
-
   const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout, but replacing or removing any decor that doesn't fit the aesthetic? Make sure to double check your results such that they match the requested aesthetic.`);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,60 +43,21 @@ const GeneratedImageScreen = () => {
     setGeneratedImageUrl(undefined); // Clear previous generated image
     setError(null); // Clear previous errors
 
-    const formData = new FormData();
-    if (prompt.trim()) {
-      formData.append('prompt', prompt);
-    }
-
-    let filename = ''
-
-    if (selectedImage) {
-      // Prepare image for FormData. Axios handles 'multipart/form-data' well with URI.
-      filename = getImageFilename()!
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image';
-
-      formData.append('image', {
-        uri: selectedImage,
-        name: filename,
-        type: type,
-      } as any);
-  }
+    const filename = getImageFilename()
 
   try {
-
-    console.log('FORM DATA: \n\n', JSON.stringify(formData, null, 2))
     const { data: supabaseData, error } = await supabase.functions.invoke('generate-image', {
       body: { imagePath: filename, prompt },
     })
-    console.log('SUPABASE DATA: \n\n', JSON.stringify(supabaseData, null, 2))
-    console.log('SUPABASE ERROR: \n\n', JSON.stringify(error, null, 2))
 
     const {data: imageData, error: downloadError} = await supabase.storage.from('generated-images').download(`${user!.id}/${supabaseData.generatedImageName}`)
 
-    if (downloadError) {
-      console.log('DOWNLOAD ERROR: \n\n', JSON.stringify(downloadError, null, 2))
-      setError('Failed to download image. Please try again.')
-      return
-    }
+    if(downloadError) throw downloadError
 
-    function blobToBase64(blob: Blob): Promise<string> {
-      return new Promise((resolve, _) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string); // TODO improve
-        reader.readAsDataURL(blob);
-      });
-    }
-
-    const imageBlob = imageData
-    console.log('IMAGE BLOBB: ', imageBlob)
-    const imageBase64String: string = await blobToBase64(imageData)
-    console.log('BASE 64 STRING: ', imageBase64String)
-    setGeneratedImageUrl(`${imageBase64String}`)
+    const imageBase64String: string = await blobToBase64(imageData) as string
+    setGeneratedImageUrl(imageBase64String)
     
   } catch (err: any) {
-    // console.error('Error during image generation:', err.message);
-
     // Display more specific error if available from backend
     console.error('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.') + '.');
     setError('Failed to generate image. ' + (err.response?.data?.details || err.message || 'Please try again.') + '.')
