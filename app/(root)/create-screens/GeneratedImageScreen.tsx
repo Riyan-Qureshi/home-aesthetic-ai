@@ -22,6 +22,11 @@ const GeneratedImageScreen = () => {
   const { user } = useAuth()
 
   // States for Gemini API interaction
+  /** 
+   * TODO: Improve prompt, this should be alot more descriptive and describe the scene better.
+   * The room type and other details can possibly be inferenced from another GPT call
+   * */
+
   const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout, but replacing or removing any decor that doesn't fit the aesthetic? Make sure to double check your results such that they match the requested aesthetic.`);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
