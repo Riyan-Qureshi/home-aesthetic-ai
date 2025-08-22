@@ -1,26 +1,25 @@
-import Header from '@/components/Header';
-import { getAesthetic, getImageUri, getRoomType } from '@/store/FormDataStore';
-import { API_ANDROID_HOST, API_HOST, API_PORT } from '@env';
-import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native'
-import animations from '@/constants/animations'
-import { useFocusEffect } from 'expo-router';
-import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
-import { RESPONSIVE_SCREEN_WIDTH } from '@/constants/data';
 import ContinueButton from '@/components/ContinueButton';
+import Header from '@/components/Header';
+import animations from '@/constants/animations';
+import { RESPONSIVE_SCREEN_WIDTH } from '@/constants/data';
+import { useAuth } from '@/provider/AuthProvider';
+import { getAesthetic, getImageFilename, getImageUri, getRoomType } from '@/store/FormDataStore';
+import { supabase } from '@/utils/supabase';
+import { EXPO_PUBLIC_SUPABASE_ANON_KEY, EXPO_PUBLIC_SUPABASE_URL } from '@env';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { useFocusEffect } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-
-const host = Platform.OS === 'android' ? API_ANDROID_HOST : API_HOST
-const port = API_PORT
-const BACKEND_URL = `http://${host}:${port}`
 
 const GeneratedImageScreen = () => {
   // const {selectedImage, selectedRoom, selectedAesthetic} = useLocalSearchParams<{selectedImage: string, selectedRoom: string, selectedAesthetic: string}>()
   const selectedImage = getImageUri()
   const selectedRoom = getRoomType()
   const selectedAesthetic = getAesthetic()
+  const { user } = useAuth()
 
   // States for Gemini API interaction
   const [prompt, setPrompt] = useState<string>(`Can you apply a ${selectedAesthetic} aesthetic to the interior design of this ${selectedRoom} image while maintaining furniture layout, but replacing or removing any decor that doesn't fit the aesthetic? Make sure to double check your results such that they match the requested aesthetic.`);
@@ -46,9 +45,11 @@ const GeneratedImageScreen = () => {
       formData.append('prompt', prompt);
     }
 
+    let filename = ''
+
     if (selectedImage) {
       // Prepare image for FormData. Axios handles 'multipart/form-data' well with URI.
-      const filename = selectedImage.split('/').pop();
+      filename = getImageFilename()!
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : 'image';
 
@@ -60,26 +61,36 @@ const GeneratedImageScreen = () => {
   }
 
   try {
-    // Make the API call to your backend
-    const response = await fetch(
-      `${BACKEND_URL}/generate-image`, 
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-    const data = await response.json()
 
-    // Check if image data is present in the response
-    if (response.ok) {
-      setGeneratedImageUrl(`data:image/jpeg;base64,${data.image}`)
-    } else if (data.textResponse) {
-      // Handle cases where Gemini might return only text
-      setError(`Model returned text: "${data.textResponse}". No image was generated.`);
-    } else {
-      setError('Unexpected response from the server. No image data received.');
+    console.log('FORM DATA: \n\n', JSON.stringify(formData, null, 2))
+    const { data: supabaseData, error } = await supabase.functions.invoke('generate-image', {
+      body: { imagePath: filename, prompt },
+    })
+    console.log('SUPABASE DATA: \n\n', JSON.stringify(supabaseData, null, 2))
+    console.log('SUPABASE ERROR: \n\n', JSON.stringify(error, null, 2))
+
+    const {data: imageData, error: downloadError} = await supabase.storage.from('generated-images').download(`${user!.id}/${supabaseData.generatedImageName}`)
+
+    if (downloadError) {
+      console.log('DOWNLOAD ERROR: \n\n', JSON.stringify(downloadError, null, 2))
+      setError('Failed to download image. Please try again.')
+      return
     }
 
+    function blobToBase64(blob: Blob): Promise<string> {
+      return new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string); // TODO improve
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    const imageBlob = imageData
+    console.log('IMAGE BLOBB: ', imageBlob)
+    const imageBase64String: string = await blobToBase64(imageData)
+    console.log('BASE 64 STRING: ', imageBase64String)
+    setGeneratedImageUrl(`${imageBase64String}`)
+    
   } catch (err: any) {
     // console.error('Error during image generation:', err.message);
 

@@ -1,7 +1,7 @@
-import { Upload } from 'tus-js-client';
+import { SUPABASE_PROJECT_STORAGE_URL } from '@env';
 import * as ImagePicker from 'expo-image-picker';
-import { fetch } from 'expo/fetch'
-import { SUPABASE_PROJECT_STORAGE_URL } from '@env'
+import { fetch } from 'expo/fetch';
+import { Upload } from 'tus-js-client';
 import { supabase } from './supabase';
 
 function getFileExtension(uri: string): string {
@@ -18,7 +18,7 @@ if (extension === 'jpg') return 'image/jpeg';
 return `image/${extension}`;
 }
 
-export async function uploadFiles( bucketName: string, pickerResult: ImagePicker.ImagePickerResult, userID: string) {
+export async function uploadFiles( bucketName: string, pickerResult: ImagePicker.ImagePickerResult, userID: string, filename: string) {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new Error('Not signed in')
   const accessToken = session.access_token
@@ -49,7 +49,7 @@ const allUploads = pickerResult.assets.map(
         metadata: {
             bucketName: bucketName,
             // @ts-ignore TODO: check why types are acting up here.
-            objectName: `${userID}/${file?.name ?? file?.fileName ?? Date.now()}`,
+            objectName: `${userID}/${filename}`,
             contentType: getMimeType(extension),
             cacheControl: '3600',
         },

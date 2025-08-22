@@ -2,7 +2,7 @@ import ContinueButton from '@/components/ContinueButton';
 import Header from '@/components/Header';
 import RoundedButton from '@/components/RoundedButton';
 import { textSize } from '@/constants/data';
-import { getImageUri, setImageUri } from '@/store/FormDataStore';
+import { getImageUri, setImageFilename, setImageUri } from '@/store/FormDataStore';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -47,7 +47,9 @@ export default function CreateScreen() {
     if (!result.canceled) {
       try {
         setIsUploading(true)
-        await uploadFiles('uploads', result, user!.id)
+        const filename = result.assets[0].uri.split('/').pop();
+        setImageFilename(filename!)
+        await uploadFiles('uploads', result, user!.id, filename!)
       } catch (err) {
         console.log(err)
         alert('Upload failed! ;-;')

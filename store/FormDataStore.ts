@@ -33,3 +33,12 @@ export const setAesthetic = (aesthetic: string) => {
 export const getAesthetic = () => {
     return roomAesthetic;
 }
+
+let imageFilename: string | undefined;
+export const setImageFilename = (filename: string) => {
+    imageFilename = filename;
+}
+
+export const getImageFilename = () => {
+    return imageFilename;
+}
